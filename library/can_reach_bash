@@ -1,0 +1,14 @@
+#!/bin/bash
+cat $1 >> /tmp/ansible.log
+host=$1
+port=$2
+timeout=$3
+
+nc -z -w $timeout $host $port
+rm -f /tmp/ansible.log
+
+if [ $? -eq 0 ]; then
+	echo '{"changed": false}'
+else
+	echo "{\"failed\": true, \"msg\": \"could not reach $host:$port\"}"
+fi

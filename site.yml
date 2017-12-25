@@ -1,0 +1,46 @@
+---
+- hosts: host
+  gather_facts: false
+  vars:
+    TEST_VAR: 200
+  vars_prompt:
+    - name: "TESTME"
+      prompt: "TESTME"
+      private: no
+  vars_files:
+    - vars/external_vars.yml
+
+  tasks:
+  - name: test ping
+    ping:
+    tags: ping
+
+  #playbook relation
+  - name: test vars
+    debug: var=TEST_VAR
+    tags: var
+  - name: test vars_prompt
+    debug: var=TESTME
+    tags: var
+  - name: test vars_files
+    debug: var=file_var
+    tags: var
+
+  #inventory relation
+  - name: test inventory var
+    debug: var=host1_inventory_var
+    tags: var
+  - name: test inventory host_var
+    debug: var=host1_host_var
+    tags: var
+  - name: test inventory group_var
+    debug: var=host_group_var
+    tags: var
+  
+  #custom modules-can_reach
+  - name: test script 
+    #script: scripts/can_reach.sh localhost 18080 1
+    #can_reach: host=localhost port=18080 timeout=1
+    can_reach_bash: host=localhost port=18080 timeout=1
+    delegate_to: localhost
+  
